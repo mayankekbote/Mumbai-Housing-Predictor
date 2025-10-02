@@ -144,8 +144,16 @@ with tab2:
     st.markdown("## 🗺️ Mumbai Housing Heatmap")
     st.caption("Explore median price per sqft across Mumbai regions")
 
-    df = pd.read_csv("mumbai_region_coords.csv", encoding='latin1')
-    mumbai = pd.read_csv("mumbai_cleaned.csv")
+    @st.cache_data(ttl=0)
+    def load_coords():
+        return pd.read_csv("mumbai_region_coords.csv", encoding="latin1")
+
+    df = load_coords()
+
+    @st.cache_data(ttl=0)
+    def load_mumbai():
+        return pd.read_csv("mumbai_cleaned.csv")
+    mumbai = load_mumbai()
 
     df.columns = df.columns.str.strip().str.lower()
     mumbai.columns = mumbai.columns.str.strip().str.lower()
