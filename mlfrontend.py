@@ -23,7 +23,7 @@ import branca.colormap as cm
 # -----------------------------
 # Load trained model
 # -----------------------------
-with open("mumbai_model (6).pkl", "rb") as f:
+with open("mumbai_model (10).pkl", "rb") as f:
     model = pickle.load(f)
 
 # -----------------------------
@@ -47,7 +47,7 @@ regions = [
  'rasayani', 'sanpada', 'santacruz east', 'santacruz west', 'seawoods', 'sewri',
  'shil phata', 'sion', 'taloja', 'tardeo', 'thane east', 'thane west', 'titwala',
  'ulhasnagar', 'ulwe', 'umroli', 'vasai', 'vashi', 'vikhroli', 'ville parle east',
- 'ville parle west', 'virar', 'wadala', 'worli'
+ 'ville parle west', 'virar', 'wadala', 'worli','other'
 ]
 
 ages = ["New", "Resale", "Unknown"]
@@ -100,7 +100,7 @@ with tab1:
         col1, col2 = st.columns(2)
 
         with col1:
-            bhk = st.number_input("🛏️ Number of BHK", min_value=1, max_value=3, value=1, step=1)
+            bhk = st.slider("🛏️ Number of BHK", min_value=1, max_value=3, value=1, step=1)
             area = st.number_input("📐 Area (sqft)", min_value=100, max_value=3000, value=1000, step=50)
 
         with col2:
