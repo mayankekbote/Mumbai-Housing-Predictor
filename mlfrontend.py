@@ -100,8 +100,8 @@ with tab1:
         col1, col2 = st.columns(2)
 
         with col1:
-            bhk = st.number_input("🛏️ Number of BHK", min_value=1, max_value=5, value=2, step=1)
-            area = st.number_input("📐 Area (sqft)", min_value=100, max_value=5000, value=1000, step=50)
+            bhk = st.number_input("🛏️ Number of BHK", min_value=1, max_value=3, value=1, step=1)
+            area = st.number_input("📐 Area (sqft)", min_value=100, max_value=3000, value=1000, step=50)
 
         with col2:
             age = st.selectbox("🏗️ Property Age", ages)
