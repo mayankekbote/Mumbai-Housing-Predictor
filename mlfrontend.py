@@ -13,7 +13,7 @@ import branca.colormap as cm
 # ==================================================
 @st.cache_resource
 def load_model():
-    with open("mumbai_model (10).pkl", "rb") as f:
+    with open("mumbai_model (6).pkl", "rb") as f:
         return pickle.load(f)
 model = load_model()
 
@@ -56,7 +56,7 @@ regions = [
  'rasayani','sanpada','santacruz east','santacruz west','seawoods','sewri',
  'shil phata','sion','taloja','tardeo','thane east','thane west','titwala',
  'ulhasnagar','ulwe','umroli','vasai','vashi','vikhroli','ville parle east',
- 'ville parle west','virar','wadala','worli','other'
+ 'ville parle west','virar','wadala','worli',
 ]
 ages = ["New", "Resale", "Unknown"]
 
@@ -92,7 +92,7 @@ st.subheader("🔮 AI-powered estimate of your dream home price in Mumbai")
 # ==================================================
 # Tabs
 # ==================================================
-tab1, tab2 = st.tabs(["⚡ Predict Price", "🗺️ Explore Map"])
+tab1, tab2 ,tab3= st.tabs(["⚡ Predict Price", "🗺️ Explore Map","Resale vs New Map"])
 
 # -----------------------------
 # Tab 1: Prediction
@@ -156,11 +156,13 @@ with tab2:
         selected_regions = st.multiselect(
             "📍 Filter by Region",
             df_map["region"].unique().tolist(),
-            default=[]
+            default=[],
+            key="tab2_region_filter"
         )
         map_style = st.selectbox(
             "🗺️ Map Style",
-            ["OpenStreetMap", "CartoDB positron", "CartoDB dark_matter"]
+            ["OpenStreetMap", "CartoDB positron", "CartoDB dark_matter"],
+            key="tab2map"
         )
         map_mode = st.radio("🌍 View Mode", ["Circle Markers", "Heatmap"])
 
@@ -205,4 +207,3 @@ with tab2:
     if selected_regions:
         avg_price = df_map[df_map['region'].isin(selected_regions)]['median_price'].mean()
         st.success(f"📊 Average Price per sqft : ₹ {avg_price:,.2f} /sqft")
-
