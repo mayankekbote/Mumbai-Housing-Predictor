@@ -5,3 +5,8 @@ scikit-learn
 folium
 streamlit-folium
 branca
+matplotlib
+seaborn
+plotly
+geopandas
+shapely
