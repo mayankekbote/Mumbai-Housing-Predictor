@@ -22,7 +22,7 @@ model = load_model()
 # ==================================================
 @st.cache_data
 def load_coords():
-    return pd.read_csv("mumbai_region_coords.csv", encoding="latin1")
+    return pd.read_csv("mumbai_region_coords (1).csv", encoding="latin1")
 
 @st.cache_data
 def load_mumbai():
@@ -34,7 +34,11 @@ mumbai = load_mumbai()
 # Clean column names once
 df.columns = df.columns.str.strip().str.lower()
 mumbai.columns = mumbai.columns.str.strip().str.lower()
+# df_clusters['latitude'] = pd.to_numeric(df_clusters['latitude'], errors='coerce')
+# df_clusters['longitude'] = pd.to_numeric(df_clusters['longitude'], errors='coerce')
 
+# # Drop rows with invalid coordinates
+# df_clusters = df_clusters.dropna(subset=['latitude', 'longitude', 'median_price'])
 # ==================================================
 # Features
 # ==================================================
@@ -56,7 +60,7 @@ regions = [
  'rasayani','sanpada','santacruz east','santacruz west','seawoods','sewri',
  'shil phata','sion','taloja','tardeo','thane east','thane west','titwala',
  'ulhasnagar','ulwe','umroli','vasai','vashi','vikhroli','ville parle east',
- 'ville parle west','virar','wadala','worli',
+ 'ville parle west','virar','wadala','worli'
 ]
 ages = ["New", "Resale", "Unknown"]
 
@@ -92,7 +96,7 @@ st.subheader("🔮 AI-powered estimate of your dream home price in Mumbai")
 # ==================================================
 # Tabs
 # ==================================================
-tab1, tab2 ,tab3= st.tabs(["⚡ Predict Price", "🗺️ Explore Map","Resale vs New Map"])
+tab1, tab2 ,tab3= st.tabs(["⚡ Predict Price", "🗺️ Explore Map","Neighbourhood Clusters"])
 
 # -----------------------------
 # Tab 1: Prediction
@@ -207,3 +211,88 @@ with tab2:
     if selected_regions:
         avg_price = df_map[df_map['region'].isin(selected_regions)]['median_price'].mean()
         st.success(f"📊 Average Price per sqft : ₹ {avg_price:,.2f} /sqft")
+with tab3:
+    st.markdown("## 🏘️ Mumbai Housing Clusters")
+    st.caption("Clusters based on location (lat/lon) and median price per sqft")
+
+    # Prepare data
+    df_clusters = pd.merge(df, median_prices, on="region", how="left")
+    df_clusters.rename(columns={"price_per_sqft": "median_price"}, inplace=True)
+
+
+    # Layout
+    col1, col2 = st.columns([1, 1])
+
+    # ---------- LEFT COLUMN ----------
+    with col1:
+        k = st.slider("🔢 Select number of clusters", min_value=2, max_value=8, value=3, step=1)
+
+        from sklearn.cluster import KMeans
+        kmeans = KMeans(n_clusters=k, random_state=42)
+        df_clusters['cluster'] = kmeans.fit_predict(df_clusters[['latitude','longitude','median_price']])
+
+        # Cluster summary
+        cluster_summary = df_clusters.groupby('cluster')['median_price'].agg(['count','mean','min','max']).reset_index()
+        cluster_summary = cluster_summary.sort_values(by='mean', ascending=False).reset_index(drop=True)
+
+        # Assign colors for sorted clusters
+        import matplotlib.cm as mpl_cm
+        import matplotlib.colors as mpl_colors
+        palette = mpl_cm.get_cmap('Set1', k)
+        cluster_colors = [mpl_colors.rgb2hex(palette(i)) for i in range(k)]
+
+        # Map original KMeans label → color according to sorted mean
+        # This ensures dataframe and map colors match
+        label_to_color = {row['cluster']: cluster_colors[i] for i, row in cluster_summary.iterrows()}
+
+        # Highlight cluster column in dataframe
+        def highlight_cluster(row):
+            return [f'background-color: {label_to_color[row.cluster]}' if col=='cluster' else '' for col in row.index]
+
+        st.dataframe(cluster_summary.style.apply(highlight_cluster, axis=1))
+
+    # ---------- RIGHT COLUMN ----------
+    with col2:
+        import folium
+        from streamlit_folium import st_folium
+
+        m = folium.Map(location=[19.0760, 72.8777], zoom_start=10)
+
+        for _, row in df_clusters.iterrows():
+            folium.CircleMarker(
+                location=[row['latitude'], row['longitude']],
+                radius=10,
+                color=label_to_color[row['cluster']],       # <- use mapping here
+                fill=True,
+                fill_color=label_to_color[row['cluster']],  # <- use mapping here
+                fill_opacity=0.7,
+                popup=f"{row['region'].title()}<br>Median Price: ₹ {row['median_price']:,.2f}/sqft<br>Cluster: {row['cluster']}"
+            ).add_to(m)
+
+        st_folium(m, width='100%', height=700)
+
+
+
+
+
+    # median_prices = mumbai.groupby("region")["price_per_sqft"].median().reset_index()
+    # df_dend = pd.merge(df, median_prices, on="region", how="left")
+    # df_dend.rename(columns={"price_per_sqft": "median_price"}, inplace=True)
+    # df_dend = df_dend.dropna(subset=['latitude','longitude','median_price'])
+
+    # from scipy.cluster.hierarchy import linkage, dendrogram
+    # import matplotlib.pyplot as plt
+
+    # # Features for clustering: lat, lon, median_price
+    # X = df_dend[['latitude','longitude','median_price']].values
+
+    # # Perform hierarchical clustering
+    # Z = linkage(X, method='ward')
+
+    # # Plot dendrogram
+    # fig, ax = plt.subplots(figsize=(12, 6))
+    # dendrogram(Z, labels=df_dend['region'].values, leaf_rotation=90)
+    # plt.title("Hierarchical Clustering Dendrogram (Ward)")
+    # plt.xlabel("Region")
+    # plt.ylabel("Distance")
+    # st.pyplot(fig)
