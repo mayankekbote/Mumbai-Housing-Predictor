@@ -7,9 +7,12 @@ import pickle
 from streamlit_folium import st_folium
 import folium
 import branca.colormap as cm
-
+import os
 # ==================================================
-# Load model (cached globally)
+#Google Search Indexing HTML
+if os.path.exists("googlea13bd4196506901f.html"):   
+    with open("googleXXXX.html", "r") as f:
+        st.markdown(f.read(), unsafe_allow_html=True)
 # ==================================================
 @st.cache_resource
 def load_model():
@@ -68,9 +71,7 @@ ages = ["New", "Resale", "Unknown"]
 # Streamlit Page Config & CSS
 # ==================================================
 st.set_page_config(page_title="Mumbai Housing Price Predictor", page_icon="🏠", layout="wide")
-st.markdown("""
-<meta name="google-site-verification" content="ZVe3DzHw-s_FVXPPXlSvWPgR0hoxBoP72sETwBwfd2U">
-""", unsafe_allow_html=True)
+
 
 st.markdown("""
 <style>
