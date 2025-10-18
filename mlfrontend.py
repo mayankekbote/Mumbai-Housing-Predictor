@@ -8,11 +8,13 @@ from streamlit_folium import st_folium
 import folium
 import branca.colormap as cm
 import os
+st.markdown(
+    '<meta name="google-site-verification" content="ZVe3DzHw-s_FVXPPXlSvWPgR0hoxBoP72sETwBwfd2U" />',
+    unsafe_allow_html=True
+)
+
 # ==================================================
-#Google Search Indexing HTML
-if os.path.exists("googlea13bd4196506901f.html"):   
-    with open("googlea13bd4196506901f.html", "r") as f:
-        st.markdown(f.read(), unsafe_allow_html=True)
+# Load model (cached globally)
 # ==================================================
 @st.cache_resource
 def load_model():
