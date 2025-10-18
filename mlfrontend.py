@@ -68,6 +68,9 @@ ages = ["New", "Resale", "Unknown"]
 # Streamlit Page Config & CSS
 # ==================================================
 st.set_page_config(page_title="Mumbai Housing Price Predictor", page_icon="🏠", layout="wide")
+st.markdown("""
+<meta name="google-site-verification" content="ZVe3DzHw-s_FVXPPXlSvWPgR0hoxBoP72sETwBwfd2U">
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
@@ -213,7 +216,7 @@ with tab2:
         st.success(f"📊 Average Price per sqft : ₹ {avg_price:,.2f} /sqft")
 with tab3:
     st.markdown("## 🏘️ Mumbai Housing Clusters")
-    st.caption("Clusters based on location (lat/lon) and median price per sqft")
+    
 
     # Prepare data
     df_clusters = pd.merge(df, median_prices, on="region", how="left")
