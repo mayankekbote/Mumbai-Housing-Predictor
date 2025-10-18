@@ -11,7 +11,7 @@ import os
 # ==================================================
 #Google Search Indexing HTML
 if os.path.exists("googlea13bd4196506901f.html"):   
-    with open("ggooglea13bd4196506901f.html", "r") as f:
+    with open("googlea13bd4196506901f.html", "r") as f:
         st.markdown(f.read(), unsafe_allow_html=True)
 # ==================================================
 @st.cache_resource
