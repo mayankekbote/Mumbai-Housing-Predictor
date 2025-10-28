@@ -230,6 +230,7 @@ with tab3:
     col1, col2 = st.columns([1, 1])
 
     # ---------- LEFT COLUMN ----------
+
     with col1:
         k = st.slider("🔢 Select number of clusters", min_value=2, max_value=8, value=3, step=1)
 
@@ -238,8 +239,11 @@ with tab3:
         df_clusters['cluster'] = kmeans.fit_predict(df_clusters[['latitude','longitude','median_price']])
 
         # Cluster summary
-        cluster_summary = df_clusters.groupby('cluster')['median_price'].agg(['count','mean','min','max']).reset_index()
-        cluster_summary = cluster_summary.sort_values(by='mean', ascending=False).reset_index(drop=True)
+        st.markdown("### 📋 Cluster Summary")
+        st.caption("Clusters sorted by average median price per sqft")
+        cluster_summary = df_clusters.groupby('cluster')['median_price'].agg(['count','mean','min','max']).reset_index() 
+        cluster_summary.rename(columns={'mean': 'median'}, inplace=True)   
+        cluster_summary = cluster_summary.sort_values(by='median', ascending=False).reset_index(drop=True)
 
         # Assign colors for sorted clusters
         import matplotlib.cm as mpl_cm
@@ -247,8 +251,7 @@ with tab3:
         palette = mpl_cm.get_cmap('Set1', k)
         cluster_colors = [mpl_colors.rgb2hex(palette(i)) for i in range(k)]
 
-        # Map original KMeans label → color according to sorted mean
-        # This ensures dataframe and map colors match
+        
         label_to_color = {row['cluster']: cluster_colors[i] for i, row in cluster_summary.iterrows()}
 
         # Highlight cluster column in dataframe
@@ -281,24 +284,3 @@ with tab3:
 
 
 
-    # median_prices = mumbai.groupby("region")["price_per_sqft"].median().reset_index()
-    # df_dend = pd.merge(df, median_prices, on="region", how="left")
-    # df_dend.rename(columns={"price_per_sqft": "median_price"}, inplace=True)
-    # df_dend = df_dend.dropna(subset=['latitude','longitude','median_price'])
-
-    # from scipy.cluster.hierarchy import linkage, dendrogram
-    # import matplotlib.pyplot as plt
-
-    # # Features for clustering: lat, lon, median_price
-    # X = df_dend[['latitude','longitude','median_price']].values
-
-    # # Perform hierarchical clustering
-    # Z = linkage(X, method='ward')
-
-    # # Plot dendrogram
-    # fig, ax = plt.subplots(figsize=(12, 6))
-    # dendrogram(Z, labels=df_dend['region'].values, leaf_rotation=90)
-    # plt.title("Hierarchical Clustering Dendrogram (Ward)")
-    # plt.xlabel("Region")
-    # plt.ylabel("Distance")
-    # st.pyplot(fig)
