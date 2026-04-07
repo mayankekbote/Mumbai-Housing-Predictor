@@ -2,7 +2,7 @@
 
 # 🏠 Mumbai Housing Price Predictor
 
-Predict housing prices across Mumbai using an **AI-powered Streamlit web app** built with **Random Forest Regression** and enriched with **interactive heatmaps**, **cluster visualization**, and **regional analytics**.
+House price prediction uses machine learning to assist buyers, sellers, and real estate companies in making better decisions. This project builds a machine learning model to estimate prices using features like region, size, bedrooms, and property age. Regression models such as Linear Regression, Decision Tree, and Random Forest were tested to identify the most accurate predictor, with the final application powered by an **Artificial Neural Network (ANN)**. Geospatial aggregation is used to identify areas with high price per sqft.
 
 🔗 **Live App:** [https://flatdekho.streamlit.app](https://flatdekho.streamlit.app)
 
@@ -65,21 +65,19 @@ Mumbai's real estate is one of India's most dynamic markets. This project provid
 * Region
 * Local market dynamics
 
-It uses **Random Forest Regression (8 decision trees)** to deliver stable and interpretable predictions.
+It uses an **Artificial Neural Network (ANN)** with multiple hidden layers and Adam optimization to deliver high-precision predictions.
 
 ---
 
 # 🧠 Machine Learning Details
 
-### ✔ **Model Used: Random Forest Regression**
+### ✔ **Model Used: Artificial Neural Network (ANN)**
 
-* Number of trees: **8**
-* Reason for using Random Forest:
-
-  * Handles non-linear relationships well
-  * Robust to noisy data
-  * Performs well on sparse one-hot encoded location features
-  * Offers balanced bias–variance
+* Architecture: Dense input layer, multiple hidden layers (ReLU), and a single linear output layer.
+* Reason for using ANN:
+  * Captures complex non-linear relationships between property features.
+  * Scales well with large datasets (100+ region segments).
+  * High predictive accuracy through backpropagation and Adam optimization.
 
 ### ✔ **Feature Engineering**
 
@@ -135,10 +133,11 @@ It uses **Random Forest Regression (8 decision trees)** to deliver stable and in
 
 ```
 📂 project-root
-│── app.py                   # Main Streamlit application
-│── mumbai_model (6).pkl     # Random Forest model
-│── mumbai_cleaned.csv       # Cleaned housing dataset
-│── mumbai_region_coords (1).csv  # Mapping coordinates
+│── app_ann.py                   # Main Streamlit application
+│── mumbai_ann_model_fixed.keras # ANN model
+│── mumbai_cleaned.csv           # Cleaned housing dataset
+│── mumbai_region_coords (1).csv # Mapping coordinates
+│── scaler.pkl                   # Input data scaler
 │── requirements.txt
 │── README.md
 ```
