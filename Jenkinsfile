@@ -31,20 +31,36 @@ pipeline {
         }
 
         stage('Start Streamlit App') {
-    steps {
-        echo '🚀 Starting Streamlit app...'
+            steps {
+                echo '🚀 Starting Streamlit app...'
 
-        bat """
-        start "" /B "%PYTHON%" -m streamlit run app_ann.py --server.port 8501 --server.headless true
-        """
+                bat """
+                start "" /B "%PYTHON%" -m streamlit run app_ann.py --server.port 8501 --server.headless true
+                """
 
-        echo '⏳ Waiting for app to be ready...'
+                echo '⏳ Waiting for app to be LIVE...'
 
-        timeout(time: 30, unit: 'SECONDS') {
-            sleep 30
+                powershell """
+                \$url = "${env.STREAMLIT_URL}"
+                \$maxAttempts = 20
+
+                for (\$i=0; \$i -lt \$maxAttempts; \$i++) {
+                    try {
+                        \$response = Invoke-WebRequest -Uri \$url -UseBasicParsing
+                        if (\$response.StatusCode -eq 200) {
+                            Write-Host "✅ App is LIVE"
+                            exit 0
+                        }
+                    } catch {
+                        Write-Host "Waiting for app..."
+                    }
+                    Start-Sleep -Seconds 2
+                }
+
+                throw "❌ Streamlit app failed to start"
+                """
+            }
         }
-    }
-}
 
         stage('Run Selenium Tests') {
             steps {
@@ -57,11 +73,7 @@ pipeline {
     post {
         always {
             echo '🧹 Cleaning up processes...'
-
-            // Kill all streamlit/python processes safely
-            bat """
-            taskkill /F /IM python.exe /T >nul 2>&1
-            """
+            bat "taskkill /F /IM python.exe /T >nul 2>&1"
         }
 
         success {
