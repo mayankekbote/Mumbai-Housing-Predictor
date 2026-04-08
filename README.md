@@ -1,8 +1,8 @@
 
 
-# 🏠 Mumbai Housing Price Predictor
+# 🏠 Mumbai Housing Price Predictor (Hybrid ANN + Fuzzy Logic)
 
-House price prediction uses machine learning to assist buyers, sellers, and real estate companies in making better decisions. This project builds a machine learning model to estimate prices using features like region, size, bedrooms, and property age. Regression models such as Linear Regression, Decision Tree, and Random Forest were tested to identify the most accurate predictor, with the final application powered by an **Artificial Neural Network (ANN)**. Geospatial aggregation is used to identify areas with high price per sqft.
+House price prediction uses machine learning to assist buyers, sellers, and real estate companies in making better decisions. This project builds a comprehensive, hybrid system to estimate prices using features like region, size, bedrooms, and property age. The final application integrates an **Artificial Neural Network (ANN)** for high-precision data-driven predictions and a **Fuzzy Logic Expert System** for transparent, rule-based reasoning. Regional classification is performed using unsupervised clustering to group areas with similar price dynamics.
 
 🔗 **Live App:** [https://flatdekho.streamlit.app](https://flatdekho.streamlit.app)
 
@@ -55,29 +55,36 @@ http://localhost:8501
 
 ---
 
-# 🌟 Project Overview
-
-Mumbai's real estate is one of India's most dynamic markets. This project provides a **machine learning–powered system** to estimate housing prices based on:
+Mumbai's real estate is one of India's most dynamic markets. This project provides a **hybrid intelligent system** to estimate housing prices based on:
 
 * BHK
 * Area (sqft)
 * Property age
-* Region
+* Region (Grouped into buckets: Elite, High, Premium, Mid-Range, Budget, and Essential)
 * Local market dynamics
 
-It uses an **Artificial Neural Network (ANN)** with multiple hidden layers and Adam optimization to deliver high-precision predictions.
+The system features:
+1. **ANN Prediction Engine**: High-accuracy deep learning backend.
+2. **Fuzzy Logic Dashboard**: Transparent, rule-based expert system for human-like reasoning.
+3. **Regional Analytics**: Automated classification of Mumbai regions into value-based tiers.
 
 ---
 
-# 🧠 Machine Learning Details
-
-### ✔ **Model Used: Artificial Neural Network (ANN)**
+### ✔ **Model 1: Artificial Neural Network (ANN)**
 
 * Architecture: Dense input layer, multiple hidden layers (ReLU), and a single linear output layer.
 * Reason for using ANN:
   * Captures complex non-linear relationships between property features.
   * Scales well with large datasets (100+ region segments).
   * High predictive accuracy through backpropagation and Adam optimization.
+
+### ✔ **Model 2: Fuzzy Logic Expert System**
+
+* Methodology: Rule-based engine using membership functions for `Size`, `BHK`, `Age`, and `Region Category`.
+* Features:
+  * Transparent deduction logic (e.g., If Region is Elite and BHK is High, then Price is High).
+  * Centroid defuzzification for crisp price estimation.
+  * Interactive UI for viewing membership functions and active rule tables.
 
 ### ✔ **Feature Engineering**
 
@@ -133,13 +140,15 @@ It uses an **Artificial Neural Network (ANN)** with multiple hidden layers and A
 
 ```
 📂 project-root
-│── app_ann.py                   # Main Streamlit application
-│── mumbai_ann_model_fixed.keras # ANN model
+│── app_ann.py                   # Main Streamlit application (Hybrid ANN + Fuzzy)
+│── analyze_regions.py           # Script for regional classification & analysis
+│── region_buckets.json          # Pre-calculated regional categorization data
+│── mumbai_ann_model_fixed.keras # Trained ANN model
 │── mumbai_cleaned.csv           # Cleaned housing dataset
-│── mumbai_region_coords (1).csv # Mapping coordinates
-│── scaler.pkl                   # Input data scaler
-│── requirements.txt
-│── README.md
+│── mumbai_region_coords (1).csv # Mapping coordinates for geospatial features
+│── scaler.pkl                   # Input data scaler for ANN features
+│── requirements.txt             # Project dependencies
+│── README.md                    # Project documentation
 ```
 
 ---
