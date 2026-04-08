@@ -1,4 +1,5 @@
 import sys
+import tempfile
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.edge.service import Service
@@ -9,23 +10,27 @@ from selenium.webdriver.support import expected_conditions as EC
 def test_streamlit_app():
     print("Starting Selenium UI Test (Edge Headless)...")
 
-    # Edge options (CI safe)
+    user_data_dir = tempfile.mkdtemp()
+    print(f"Using temp profile dir: {user_data_dir}")
+
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920,1080")
-    options.add_argument("--remote-debugging-port=9222")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-infobars")
+    options.add_argument("--inprivate")
+    options.add_argument(f"--user-data-dir={user_data_dir}")
+    # Removed --remote-debugging-port=9222 (Fix 2)
 
-    # ✅ LOCAL DRIVER PATH (IMPORTANT)
     EDGE_DRIVER_PATH = "C:\\edgedriver\\msedgedriver.exe"
 
     try:
         service = Service(EDGE_DRIVER_PATH)
         driver = webdriver.Edge(service=service, options=options)
+        print("Edge Driver initialized successfully.")
     except Exception as e:
         print(f"Error initializing Edge Driver: {e}")
         sys.exit(1)
@@ -46,7 +51,6 @@ def test_streamlit_app():
         title_text = title_element.text
         print(f"Page Title: {title_text}")
 
-        # Assertions
         if "Mumbai Housing Price Predictor" not in title_text:
             raise Exception("Main title not found")
 
