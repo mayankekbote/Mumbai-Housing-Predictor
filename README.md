@@ -136,6 +136,18 @@ The system features:
 
 ---
 
+# 🏗️ DevOps & CI/CD Pipeline
+
+This project implements a complete **DevOps pipeline** to automate the testing and deployment lifecycle:
+
+- **Version Control**: Managed with **GitHub**.
+- **Continuous Integration (CI)**: Powered by **Jenkins** (via `Jenkinsfile`).
+- **Automated Testing**: UI tests built using **Selenium** with **Microsoft Edge (Headless)**.
+- **Background Automation**: The pipeline automatically manages the Streamlit server lifecycle (Start -> Test -> Cleanup) using Windows PowerShell.
+- **Portability**: All dependencies are managed in `requirements.txt` for easy replication.
+
+---
+
 # 📁 Project Structure
 
 ```
@@ -143,6 +155,8 @@ The system features:
 │── app_ann.py                   # Main Streamlit application (Hybrid ANN + Fuzzy)
 │── analyze_regions.py           # Script for regional classification & analysis
 │── region_buckets.json          # Pre-calculated regional categorization data
+│── tests/test_ui.py             # Automated Selenium UI tests (Edge)
+│── Jenkinsfile                  # DevOps pipeline configuration (Windows)
 │── mumbai_ann_model_fixed.keras # Trained ANN model
 │── mumbai_cleaned.csv           # Cleaned housing dataset
 │── mumbai_region_coords (1).csv # Mapping coordinates for geospatial features
