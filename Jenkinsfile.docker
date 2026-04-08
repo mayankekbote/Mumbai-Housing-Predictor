@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "streamlit-app"
+        CONTAINER_NAME = "streamlit-container"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                bat "docker build -t %IMAGE_NAME% ."
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                bat """
+                docker stop %CONTAINER_NAME% 2>nul
+                docker rm %CONTAINER_NAME% 2>nul
+                docker run -d -p 8501:8501 --name %CONTAINER_NAME% %IMAGE_NAME%
+                """
+            }
+        }
+
+        stage('Test App') {
+            steps {
+                bat "\"C:\\Users\\mayan\\AppData\\Local\\Programs\\Python\\Python310\\python.exe\" tests/test_ui.py"
+            }
+        }
+    }
+
+    post {
+        always {
+            bat "docker stop %CONTAINER_NAME% 2>nul"
+            bat "docker rm %CONTAINER_NAME% 2>nul"
+        }
+    }
+}
