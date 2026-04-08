@@ -31,19 +31,20 @@ pipeline {
         }
 
         stage('Start Streamlit App') {
-            steps {
-                echo '🚀 Starting Streamlit app...'
+    steps {
+        echo '🚀 Starting Streamlit app...'
 
-                // Start app in background (stable Windows way)
-                bat """
-                start "" /B "%PYTHON%" -m streamlit run app_ann.py --server.port 8501 --server.headless true
-                """
+        bat """
+        start "" /B "%PYTHON%" -m streamlit run app_ann.py --server.port 8501 --server.headless true
+        """
 
-                // Wait until app is live
-                echo '⏳ Waiting for app to be ready...'
-                timeout(time: 30, unit: 'SECONDS')
-            }
+        echo '⏳ Waiting for app to be ready...'
+
+        timeout(time: 30, unit: 'SECONDS') {
+            sleep 30
         }
+    }
+}
 
         stage('Run Selenium Tests') {
             steps {
