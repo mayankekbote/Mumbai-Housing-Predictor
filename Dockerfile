@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
 WORKDIR /app
+ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 COPY . .
 
 RUN pip install -r requirements.txt

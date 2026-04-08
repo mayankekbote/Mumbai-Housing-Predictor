@@ -64,12 +64,9 @@ _feature_names = ['x`bhk', 'area', 'age'] + _regions
 # ==================================================
 @st.cache_resource
 def load_ann_model():
-    try:
-        import keras
-        return keras.models.load_model("mumbai_ann_model_fixed.keras")
-    except Exception as e:
-        from tensorflow import keras
-        return keras.models.load_model("mumbai_ann_model_fixed.keras")
+    import keras
+    # Keras 3 can directly load .keras zip files
+    return keras.models.load_model("mumbai_ann_model_fixed.keras")
 
 @st.cache_resource
 def load_scaler():

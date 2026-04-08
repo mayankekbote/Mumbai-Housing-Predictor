@@ -11,5 +11,7 @@ plotly
 geopandas
 shapely
 selenium>=4.6.0
+tensorflow==2.16.1
+keras==3.4.1
 webdriver-manager
 requests
