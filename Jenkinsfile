@@ -10,21 +10,21 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo '📦 Checking out project source code...'
+                echo ' Checking out project source code...'
                 checkout scm
             }
         }
 
         stage('Verify Python') {
             steps {
-                echo '🔍 Verifying Python setup...'
+                echo ' Verifying Python setup...'
                 bat "\"%PYTHON%\" --version"
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo '🛠️ Installing dependencies...'
+                echo ' Installing dependencies...'
                 bat "\"%PYTHON%\" -m pip install --upgrade pip"
                 bat "\"%PYTHON%\" -m pip install -r requirements.txt"
             }
@@ -32,13 +32,13 @@ pipeline {
 
         stage('Start Streamlit App') {
             steps {
-                echo '🚀 Starting Streamlit app...'
+                echo ' Starting Streamlit app...'
 
                 bat """
                 start "" /B "%PYTHON%" -m streamlit run app_ann.py --server.port 8501 --server.headless true
                 """
 
-                echo '⏳ Waiting for app to be LIVE...'
+                echo ' Waiting for app to be LIVE...'
 
                 powershell """
                 \$url = "${env.STREAMLIT_URL}"
@@ -48,7 +48,7 @@ pipeline {
                     try {
                         \$response = Invoke-WebRequest -Uri \$url -UseBasicParsing
                         if (\$response.StatusCode -eq 200) {
-                            Write-Host "✅ App is LIVE"
+                            Write-Host "App is LIVE"
                             exit 0
                         }
                     } catch {
@@ -57,14 +57,14 @@ pipeline {
                     Start-Sleep -Seconds 2
                 }
 
-                throw "❌ Streamlit app failed to start"
+                throw " Streamlit app failed to start"
                 """
             }
         }
 
         stage('Run Selenium Tests') {
             steps {
-                echo '🧪 Running Selenium tests...'
+                echo 'Running Selenium tests...'
                 bat "\"%PYTHON%\" tests/test_ui.py"
             }
         }
@@ -77,11 +77,11 @@ pipeline {
         }
 
         success {
-            echo '🎉 All tests passed!'
+            echo ' All tests passed!'
         }
 
         failure {
-            echo '🚨 Pipeline failed. Check logs.'
+            echo 'Pipeline failed. Check logs.'
         }
     }
 }
