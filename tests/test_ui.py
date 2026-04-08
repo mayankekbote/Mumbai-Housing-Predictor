@@ -1,77 +1,35 @@
 import sys
-import tempfile
-from selenium import webdriver
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
 
 def test_streamlit_app():
-    print("Starting Selenium UI Test (Edge Headless)...")
+    print("Starting HTTP UI Test (no browser required)...")
 
-    user_data_dir = tempfile.mkdtemp()
-    print(f"Using temp profile dir: {user_data_dir}")
-
-    options = Options()
-    options.add_argument("--headless=old")           # 'old' headless is more stable in Session 0
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-software-rasterizer")  # Key fix for Session 0 / service accounts
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-infobars")
-    options.add_argument("--inprivate")
-    options.add_argument(f"--user-data-dir={user_data_dir}")
-    options.add_argument("--disable-background-networking")
-    options.add_argument("--disable-default-apps")
-    options.add_argument("--disable-sync")
-    options.add_argument("--metrics-recording-only")
-    options.add_argument("--mute-audio")
-    options.add_argument("--no-first-run")
-
-    EDGE_DRIVER_PATH = "C:\\edgedriver\\msedgedriver.exe"
+    url = "http://localhost:8501"
 
     try:
-        service = Service(EDGE_DRIVER_PATH)
-        driver = webdriver.Edge(service=service, options=options)
-        print("Edge Driver initialized successfully.")
-    except Exception as e:
-        print(f"Error initializing Edge Driver: {e}")
-        sys.exit(1)
+        response = requests.get(url, timeout=15)
 
-    try:
-        driver.set_page_load_timeout(30)
+        print(f"HTTP Status Code: {response.status_code}")
 
-        print("Opening Streamlit app...")
-        driver.get("http://localhost:8501")
+        if response.status_code != 200:
+            raise Exception(f"Expected 200, got {response.status_code}")
 
-        print("Waiting for page to load...")
-        wait = WebDriverWait(driver, 30)
+        page_content = response.text
 
-        title_element = wait.until(
-            EC.presence_of_element_located((By.TAG_NAME, "h1"))
-        )
+        if "Mumbai Housing Price Predictor" not in page_content:
+            raise Exception("Main title not found in page source")
 
-        title_text = title_element.text
-        print(f"Page Title: {title_text}")
-
-        if "Mumbai Housing Price Predictor" not in title_text:
-            raise Exception("Main title not found")
-
-        if "Fuzzy Logic" not in driver.page_source:
-            raise Exception("Fuzzy Logic text not found")
+        if "Fuzzy Logic" not in page_content:
+            raise Exception("Fuzzy Logic text not found in page source")
 
         print("UI Test Passed Successfully")
 
+    except requests.exceptions.ConnectionError:
+        print("Test Failed: Could not connect to Streamlit app at localhost:8501")
+        sys.exit(1)
     except Exception as e:
         print(f"Test Failed: {e}")
         sys.exit(1)
-
-    finally:
-        print("Closing browser...")
-        driver.quit()
 
 
 if __name__ == "__main__":
