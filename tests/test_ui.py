@@ -1,54 +1,70 @@
-import time
 import sys
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
+from selenium.webdriver.edge.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
+
 
 def test_streamlit_app():
     print("Starting Selenium UI Test (Edge Headless)...")
-    
-    # Setup Edge Options
+
+    # Configure Edge options for CI (VERY IMPORTANT)
     options = Options()
     options.add_argument("--headless=new")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--remote-debugging-port=9222")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
-    # Initialize Driver
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-infobars")
+
+    # Initialize driver safely
     try:
-        driver = webdriver.Edge(options=options)
+        service = Service(EdgeChromiumDriverManager().install())
+        driver = webdriver.Edge(service=service, options=options)
     except Exception as e:
         print(f"Error initializing Edge Driver: {e}")
         sys.exit(1)
-    
+
     try:
-        # 1. Open Streamlit App
-        print("Navigating to http://localhost:8501...")
+        driver.set_page_load_timeout(30)
+
+        # Open app
+        print("Opening Streamlit app...")
         driver.get("http://localhost:8501")
-        
-        # 2. Wait for title
-        print("Waiting for title to load...")
-        WebDriverWait(driver, 20).until(
+
+        # Wait for UI
+        print("Waiting for page to load...")
+        wait = WebDriverWait(driver, 30)
+
+        title_element = wait.until(
             EC.presence_of_element_located((By.TAG_NAME, "h1"))
         )
-        
-        # 3. Verify content
-        title_text = driver.find_element(By.TAG_NAME, "h1").text
-        print(f"Found Page Title: {title_text}")
-        
-        assert "Mumbai Housing Price Predictor" in title_text
-        print("Success: Main title is correct.")
-        
-        assert "Fuzzy Logic" in driver.page_source
-        print("Success: 'Fuzzy Logic' detected in UI.")
-        
+
+        title_text = title_element.text
+        print(f"Page Title: {title_text}")
+
+        # Assertions
+        if "Mumbai Housing Price Predictor" not in title_text:
+            raise Exception("Main title not found")
+
+        if "Fuzzy Logic" not in driver.page_source:
+            raise Exception("Fuzzy Logic text not found")
+
+        print("UI Test Passed Successfully")
+
     except Exception as e:
         print(f"Test Failed: {e}")
         sys.exit(1)
+
     finally:
         print("Closing browser...")
         driver.quit()
+
 
 if __name__ == "__main__":
     test_streamlit_app()
