@@ -5,13 +5,11 @@ from selenium.webdriver.edge.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
-
 
 def test_streamlit_app():
     print("Starting Selenium UI Test (Edge Headless)...")
 
-    # Configure Edge options for CI (VERY IMPORTANT)
+    # Edge options (CI safe)
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--disable-gpu")
@@ -22,9 +20,11 @@ def test_streamlit_app():
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-infobars")
 
-    # Initialize driver safely
+    # ✅ LOCAL DRIVER PATH (IMPORTANT)
+    EDGE_DRIVER_PATH = "C:\\edgedriver\\msedgedriver.exe"
+
     try:
-        service = Service(EdgeChromiumDriverManager().install())
+        service = Service(EDGE_DRIVER_PATH)
         driver = webdriver.Edge(service=service, options=options)
     except Exception as e:
         print(f"Error initializing Edge Driver: {e}")
@@ -33,11 +33,9 @@ def test_streamlit_app():
     try:
         driver.set_page_load_timeout(30)
 
-        # Open app
         print("Opening Streamlit app...")
         driver.get("http://localhost:8501")
 
-        # Wait for UI
         print("Waiting for page to load...")
         wait = WebDriverWait(driver, 30)
 
